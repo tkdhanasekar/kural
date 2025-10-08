@@ -19,7 +19,7 @@ rm -rf venv
 
 # create virtual env
 virtualenv venv
-
+source venv/bin/activate
 # Install all the requirements
 pip install -r requirements.txt
 
