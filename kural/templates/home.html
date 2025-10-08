@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Home
+{% endblock %}
+
+{% block navbar %}
+{% include 'navbar.html' %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+      {% if kurals %}
+
+            {% if user.is_authenticated  and not event_cutoff_date %}
+                {% csrf_token %}
+                <div class="top-container">
+                  <button type="button" id="export" class="btn btn-primary">PDF கோப்பில் சேர்க்கவும்</button>
+                </div>
+                <div id="saved-row-count" style="text-align: center">
+                    தேர்ந்தெடுக்கப்பட்ட குறள்கள்: <span id="rows-selected-count">{{ kural_count }}</span>
+                </div>
+            {% elif event_cutoff_date %}
+                <div class="top-container">
+                  <span id="cutoff"><b> குறள்கள் தேர்வு செய்ய நாட்கள் முடிந்துவிட்டது </b></span>
+                </div>
+                <div id="saved-row-count1" style="text-align: center">
+                    தேர்ந்தெடுக்கப்பட்ட குறள்கள்: <span id="rows-selected-count">{{ kural_count }}</span>
+                </div>
+            {% endif %}
+    <table border="0" cellspacing="5" cellpadding="5">
+        <tbody>
+        <tr>
+            <td>Chapter Number:</td>
+            <td><input type="text" class="form-control"  placeholder="Enter chapter number" id="chapter" name="chapter"></td>
+        </tr>
+        </tbody>
+    </table>
+    <table id="example" class="display" style="width:100%">
+            <thead>
+              <tr>
+                <th></th>
+                <th>எண்</th>
+                <th>திருக்குறள்</th>
+                <th>பொருள்</th>
+                <th>ஆங்கில விளக்கம்</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in kurals %}
+                  {% if not event_cutoff_date %}
+                        {% if item.selected %}
+                        <tr class="selected">
+                            <td></td>
+                        {% else %}
+                            <tr>
+                            <td></td>
+                        {% endif %}
+                  {% else %}
+                    <tr>
+                  {% endif %}
+                <td>{{ forloop.counter }}</td>
+                <td style="width:40%">
+                    {{ item.line_1 }}<br/>
+                    {{ item.line_2 }}
+                </td>
+                <td>{{ item.munnurai }}</td>
+                <td>{{ item.translation }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+    </table>
+      {% endif %}
+</div>
+<script type="text/javascript">
+
+  $.fn.dataTable.ext.search.push(
+    function( settings, data, dataIndex ) {
+        var min = (parseInt( $('#chapter').val(), 0 ) * 10) - 9 ;
+        var max = parseInt( $('#chapter').val(), 0 ) * 10;
+        var kuralID = parseFloat( data[1] ) || 0; // use data for the kuralID column
+
+        if ( ( isNaN( min ) && isNaN( max ) ) ||
+             ( isNaN( min ) && kuralID <= max ) ||
+             ( min <= kuralID   && isNaN( max ) ) ||
+             ( min <= kuralID   && kuralID <= max ) )
+        {
+            return true;
+        }
+        return false;
+    }
+);
+
+  $(document).ready(function() {
+
+   var dataTable = $('#example').DataTable( {
+        columnDefs: [ {
+            orderable: false,
+            className: 'select-checkbox',
+            targets:   0
+        } ],
+        select: {
+            style: 'multi'
+        },
+        lengthMenu: [[5,10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+        pageLength: 50
+    } );
+    // initialize selected kurals
+    var selected = new Set();
+
+    //get user selected kurals set here
+    $.ajax({
+        type: "GET",
+        url: '/userkurals',
+        headers: { "X-CSRFToken": token },
+        data: {},
+        dataType: 'json',
+        success: function (data) {
+          console.log(data);
+          selected = new Set(data);
+          console.log("**** kural size in db", selected.size);
+        }
+
+    });
+    dataTable
+        .on( 'select', function ( e, dt, type, indexes ) {
+            var rowData = dataTable.rows( indexes ).data().toArray();
+            console.log("onselect");
+            console.log(indexes);
+            console.log(rowData[0][1]);
+            selected.add(rowData[0][1]);
+            console.log("****"+dataTable.rows( '.selected' ).count());
+            $("#rows-selected-count").text(dataTable.rows( '.selected' ).count());
+        } )
+        .on( 'deselect', function ( e, dt, type, indexes ) {
+            var rowData = dataTable.rows( indexes ).data().toArray();
+            console.log(rowData);
+            selected.delete(rowData[0][1]);
+            $("#rows-selected-count").text(dataTable.rows( '.selected' ).count());
+        } );
+
+    var token = '{{csrf_token}}';
+
+
+
+    $("#export").click(function(){
+        console.log("selected size"+selected.size);
+        if(!selected.size){
+          alert("ஒரு குறளையாவது புதிதாக தேர்ந்து எடுக்கவும்");
+        }
+        else{
+            $(this).prop("disabled", true);
+            $(this).html('<div class="spinner-border text-success" role="status"><span class="sr-only">Loading...</span></div>');
+            // backend api hit part and generate PDF
+            $.ajax({
+                type: "POST",
+                url: '/download',
+                headers: { "X-CSRFToken": token },
+
+                data: JSON.stringify([...selected]),
+                dataType: 'json',
+                success: function (data) {
+                  window.location.href="/download";
+                }
+            });
+
+        }
+        console.log("after send");
+        console.log(JSON.stringify([...selected]));
+    });
+
+    // Event listener to the two range filtering inputs to redraw on input
+    $('#chapter').keyup( function() {
+        dataTable.draw();
+    } );
+} );
+</script>
+
+<style>
+.top-container{
+  text-align: center;
+  padding: 5px;
+}
+</style>
+{% endblock %}
+
+{% block footer%}
+{% include 'footer.html' %}
+{% endblock %}

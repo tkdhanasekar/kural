@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Registration
+{% endblock %}
+
+{% block navbar %}
+{% include 'navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+        <div class="row centered-form">
+            {% if messages %}
+                        {% if messages.level == 'danger' %}
+                            <div class="alert alert-danger alert-dismissible">
+                                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                <strong>{{messages.short }}</strong>{{ messages.msg}}
+                            </div>
+                        {% endif %}
+                        {% if messages.level == 'success' %}
+                            <div class="alert alert-success  alert-dismissible">
+                                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                <strong>{{messages.short}}</strong>{{ messages.msg}}
+                            </div>
+                        {% endif %}
+            {% endif %}
+        <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4" style="width: max-content;">
+        	<div class="panel panel-default">
+        		<div class="panel-heading">
+			    		<h4 class="panel-title">கேரி தமிழ்ப் பள்ளி போட்டிகள்</h4>
+			 			</div>
+			 			<div class="panel-body">
+			    		<form role="form" action="" method="POST">{% csrf_token %}
+			    			<div class="form-group">
+			    				<input type="text" name="student_id" id="student_id" class="form-control input-sm"  contenteditable="false"  readonly value="{{student_id}}">
+			    			</div>
+                            <div class="form-group">
+			    				<input type="text" name="class_levels" id="class_levels" class="form-control input-sm"  contenteditable="false" readonly  value="{{class_levels}}">
+			    			</div>
+                            {% if event1_date_show %}
+                                <div class="form-group">
+                                   <p>{{event1_date}} அன்று நடக்கவிருக்கும் திருக்குறள் போட்டியில் பங்கு பெற விருப்பமா?</p>
+                                    {% if is_registered %}
+                                        {% if is_kural_interested %}
+                                            <input type="radio" id="yes" name="is_kural_interested" value="true" checked>
+                                            <label for="is_kural_interested">ஆம்</label><br>
+                                            <input type="radio" id="no" name="is_kural_interested" value="false">
+                                            <label for="is_kural_interested">இல்லை</label><br>
+                                        {% else %}
+                                            <input type="radio" id="yes" name="is_kural_interested" value="true" >
+                                            <label for="is_kural_interested">ஆம்</label><br>
+                                            <input type="radio" id="no" name="is_kural_interested" value="false" checked>
+                                            <label for="is_kural_interested">இல்லை</label><br>
+                                        {% endif %}
+                                    {% else %}
+                                        <input type="radio" id="yes" name="is_kural_interested" value="true">
+                                        <label for="is_kural_interested">ஆம்</label><br>
+                                        <input type="radio" id="no" name="is_kural_interested" value="false">
+                                        <label for="is_kural_interested">இல்லை</label><br>
+                                    {% endif %}
+                                  <br>
+                                </div>
+                            {% endif %}
+                            {% if event2_date_show %}
+                                <div class="form-group">
+                                   <p>{{ event2_date }} அன்று நடக்கவிருக்கும் கீழ்கண்ட போட்டிகளில் இருந்து மாணவர்கள் பங்கு பெற விரும்பும் ஏதேனும் ஒரு போட்டியை தேர்ந்தெடுக்கவும் </p>
+                                        {% if is_registered %}
+                                            {% for cname in competitions %}
+                                                {% if cname == competition_name %}
+                                                    <input type="radio" id="{{cname}}" name="competition" value="{{ cname }}" checked>
+                                                    <label for="{{cname}}">{{ cname }}</label><br>
+                                                {% else %}
+                                                    <input type="radio" id="{{cname}}" name="competition" value="{{ cname }}">
+                                                    <label for="{{cname}}">{{ cname }}</label><br>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            {% for cname in competitions %}
+                                                <input type="radio" id="{{cname}}" name="competition" value="{{ cname }}">
+                                                <label for="{{cname}}">{{ cname }}</label><br>
+                                            {% endfor %}
+                                        {% endif %}
+
+                            {% endif %}
+                                </div>
+                                {% if not block_registration %}
+                                    <input type="submit" value="Register" class="btn btn-info btn-block"><br/>
+                                {% else %}
+                                    <h4> Registration Date is finished. You can't register now </h4>
+                                {% endif %}
+                                <div class="form-group">
+                                    <p>
+                                        பொதுவான விதிமுறைகள்:
+                                    </p>
+                                    <ul style="width: max-content;">
+                                        <li>மாணவர்கள் அதிகபட்சம் 2 போட்டியில் (திருக்குறள் மற்றும் பிற போட்டியில் ஒன்று) மட்டுமே தங்கள் பெயரை பதிவு செய்யுமாறு  கேட்டுக் கொள்கிறோம்.</li> 
+                                        <li>வகுப்பு வாரியாக போட்டிகள் நடைபெறுவதால், அந்தந்த பிரிவிற்கு
+                                        ஏற்றவாறு மாணவர்கள் கலந்து கொள்ளுமாறு கேட்டுக் கொள்கிறோம்.</li>
+                                        <li>போட்டிகளில் பங்கேற்க ஆர்வமுள்ள மாணவர்கள் தங்கள் பெயர்களை,
+                                        இந்த படிவம் வழியாக பதிவு செய்யுமாறு கேட்டுக் கொள்கிறோம்.</li>
+                                        <li>போட்டிகளில் பதிவு செய்ய கடைசி நாள் {{ cutoff_date }}</li>
+                                        <li>இப்போட்டிகள் அனைத்திலும் நடுவர்களின் முடிவே இறுதியானதாகும்.</li>
+                                        <li>
+                                          போட்டி தொடங்கும் நேரத்திற்கு முப்பது(30) நிமிடங்களுக்கு முன்பே வரவேண்டும் 
+                                        </li>
+                                        <li>போட்டி தொடங்கும் நேரத்திற்கு ஐந்து (5) நிமிடங்களுக்கு முன்பே
+                                        போட்டியாளர்கள் அவரவர் இருக்கைகளில் அமர்ந்திருக்க வேண்டும்.</li>
+                                        <li>போட்டி தொடங்கும் நேரத்திற்கு பிறகு வரும் போட்டியாளர்கள்
+                                        போட்டியில் பங்குபெற இயலாது</li>
+                                        <li>
+                                            போட்டி தொடங்கும் நேரத்திற்கு முப்பது  (30) நிமிடங்களுக்கு முன் வராத போட்டியாளர்கள் போட்டியில் பங்குபெற இயலாது
+                                        </li>
+                                    </ul>
+
+                                </div>
+			    		</form>
+			    	</div>
+	    		</div>
+    		</div>
+    	</div>
+    </div>
+{% endblock %}

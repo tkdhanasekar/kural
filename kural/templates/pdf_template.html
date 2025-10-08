@@ -1,0 +1,46 @@
+{% block title %}
+<div class="d-flex justify-content-between">
+      <div class="text-left" style="text-align: left;">
+          <b>பெயர்: {{ user }}</b>
+      </div>
+      <div class="text-right" style="text-align: right;">
+         <b>தேதி: {{ date }}</b>
+      </div>
+ </div>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <hr class="mt-2 mb-3"/>
+       {% for item in kurals %}
+        <div class="row">{{ forloop.counter }}.  திருக்குறள் எண் : {{ item.kural_id }}</div>
+        <br/>
+        <div class="row">
+            <strong>
+                {{ item.line_1 }}
+                <br/>
+                {{ item.line_2 }}
+            </strong>
+        </div>
+        <br/>
+        <div class="row"><i>{{ item.munnurai }}</i></div>
+        <br/>
+        <div class="row"> <b>மதிப்பெண்கள் -  குறள் - &#9744;0  &#9744;50 &#9744;100     &nbsp; &nbsp; பொருள் -  &#9744;0 &#9744;50 &#9744;100  </b></div>
+        <hr class="mt-2 mb-3"/>
+        {% endfor %}
+    </div>
+<style>
+    @page {
+    @top-center{
+        content:  "நீங்கள் தேர்ந்தெடுத்த திருக்குறள்கள் ";
+        font-weight: bold;
+    }
+    @bottom-right{
+        content:  "பக்கம் " counter(page) "/" counter(pages);
+    }
+    @bottom-center{
+        content:  "கேரி தமிழ்ப்பள்ளி, வட கரோலினா";
+    }
+}
+</style>
+{% endblock %}

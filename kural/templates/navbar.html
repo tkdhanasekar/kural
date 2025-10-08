@@ -1,0 +1,53 @@
+{% load static %}
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <ul class="navbar-nav nav-pills">
+      <li class="nav-item">
+        <img src='{% static "images/tamilosai.png" %}' width="120" height="70" alt="">
+      </li>
+      {% if user.is_authenticated and 'student' in user.groups.all.0.name%}
+            <li class="nav-item">
+              <a class="nav-link {{ home_page }}" href="{% url 'home' %}">முகப்பு</a>
+            </li>
+            {% if is_kural_interested %}
+                <li class="nav-item">
+                    <a class="nav-link {{ kural_page }}" href="{% url 'kuralhome' %}">திருக்குறள்</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ mykural_page }}" href="{% url 'mykural' %}">பதிவிறக்கம்</a>
+                </li>
+            {% endif %}
+            <li class="nav-item">
+              <a class="nav-link {{ register_page }}" href="{% url 'register' %}">பதிவு</a>
+            </li>
+      {% elif user.is_authenticated and 'judge' in user.groups.all.0.name  %}
+        <li class="nav-item">
+          <a class="nav-link {{ judge_page }}" href="{% url 'judge' %}">judge</a>
+        </li>
+      {% else %}
+         <li class="nav-item">
+          <a class="nav-link {{ home_page }}" href="{% url 'home' %}">முகப்பு</a>
+         </li>
+          <li class="nav-item">
+              <a class="nav-link {{ signup_page }}" href="{% url 'signup' %}">பதிவு</a>
+          </li>
+          <li class="nav-item ">
+              <a class="nav-link {{ login_page }}" href="{% url 'login' %}">புகுபதிகை</a>
+          </li>
+      {% endif %}
+  </ul>
+    <ul class="navbar-nav justify-content-center" style="padding-left: 250px;">
+        <li class="nav-item">
+           <p class="navbar-item" style="color: white;"> கேரி தமிழ்ப்பள்ளி, வட கரோலினா</p>
+      </li>
+    </ul>
+    {% if user.is_authenticated %}
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">வருக, {{user.student_id}}</a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{% url 'logout' %}">வெளியேறுக</a>
+                </div>
+            </li>
+        </ul>
+    {% endif %}
+</nav>

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Home
+{% endblock %}
+
+{% block navbar %}
+{% include 'navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% if user.is_authenticated %}
+        {% if is_registered %}
+            <table id="example" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        {% if competition.event1_date %}
+                            <th>நாள்</th>
+                            <th>திருக்குறள் போட்டி</th>
+                        {% endif %}
+                        {% if competition.event2_date %}
+                            <th>நாள்</th>
+                            <th>பிற போட்டி</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                    <tbody>
+                        <tr>
+                            {% if competition.event1_date %}
+                            <td> {{ competition.event1_date }}</td>
+                                {% if registration.is_kural_interested %}
+                                    <td>ஆம்</td>
+                                {% else %}
+                                    <td>இல்லை</td>
+                                {% endif %}
+                            {% endif %}
+                            {% if competition.event2_date %}
+                                <td> {{ competition.event2_date }}</td>
+                                <td> {{ registration.competition_name}}</td>
+                            {% endif %}
+                        </tr>
+                    </tbody>
+            </table>
+            <br/>
+            <div class="center-container">
+                <p> You can edit your Registration <a href="/register">here</a></p>
+            </div>
+        {% else %}
+            <div>
+                <p> You are Not Registered for Competiton. Please  register <a href="/register">here</a></p>
+            </div>
+        {% endif %}
+
+    {% endif %}
+</div>
+{% endblock %}

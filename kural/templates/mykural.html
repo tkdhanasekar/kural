@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  My Kurals
+{% endblock %}
+
+{% block navbar %}
+{% include 'navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% if pdf_path %}
+    <div class="alert alert-success" role="alert">
+        உங்கள் PDF கோப்பை   <a href="{{ pdf_path }}" target="_blank" class="alert-link">இங்கே பெறுக.</a>
+    </div>
+    {% else %}
+    <div class="alert alert-danger" role="alert">
+        நீங்கள் இன்னும் உங்களுக்கான திருக்குறள்களை தேர்ந்தெடுக்க வில்லை..
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

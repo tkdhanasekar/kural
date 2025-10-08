@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Judge
+{% endblock %}
+
+{% block navbar %}
+{% include 'navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% csrf_token %}
+    <table id="studentlist" class="display" style="width:100%">
+            <thead>
+              <tr>
+                <th>S.NO</th>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Level</th>
+                <th>Total Kurals</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for key, item in users_data.items %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="/judge/{{item.id}}/report">{{ item.student_id }}</a></td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.level }}</td>
+                    <td>{{ item.count }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+    </table>
+</div>
+<script type="text/javascript">
+  $(document).ready(function() {
+    // initialize selected kurals
+    console.log("document ready");
+
+    var dataTable = $('#studentlist').DataTable( {
+        columnDefs: [ {
+            orderable: false,
+            className: 'select-checkbox',
+            targets:   0
+        } ],
+        select: {
+            style: 'multi'
+        },
+        lengthMenu: [[5,10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+        pageLength: -1
+    } );
+} );
+</script>
+<style>
+.top-container{
+  text-align: center;
+  padding: 5px;
+}
+</style>
+{% endblock %}
+
+

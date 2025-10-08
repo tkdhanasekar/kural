@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Judge
+{% endblock %}
+
+{% block navbar %}
+{% include 'navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% csrf_token %}
+    <div class="top-container">
+        <button type="button" id="save" class="btn btn-primary">Save</button>
+    </div>
+    <table id="example" class="display" style="width:100%">
+            <thead>
+              <tr>
+                    <th>S.NO</th>
+                    <th>Kural ID</th>
+                    <th>Kural</th>
+                    <th>Porul</th>
+                    <th>Kural Marks</th>
+                    <th>Porul Marks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in kurals %}
+                <tr>
+                    <td>{{ forloop.counter }}<input type="hidden" value="{{id}}" id="userkuralid"/><input type="hidden" value="{{item.mark_id}}" id="markid{{item.kural_id}}"/></td>
+                    <td>{{ item.kural_id }}</td>
+                    <td>
+                        {{ item.tirukkural }}
+                    </td>
+                    <td>{{ item.munnurai }}</td>
+                    <td>
+                        <select class="form-select" aria-label="Default select example" id="kural{{item.kural_id}}">
+                            {% if item.judge_kural_marks == 0.0 %}
+                                <option value="0" selected>0</option>
+                                <option value="50" >50</option>
+                                <option value="100" >100</option>
+                            {% elif item.judge_kural_marks == 50.0 %}
+                                <option value="0" >0</option>
+                                <option value="50" selected>50</option>
+                                <option value="100" >100</option>
+                            {% else %}
+                                <option value="0" >0</option>
+                                <option value="50">50</option>
+                                <option value="100" selected>100</option>
+                            {% endif %}
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select" aria-label="Default select example" id="porul{{item.kural_id}}">
+                            {% if item.judge_porul_marks == 0.0 %}
+                                <option value="0" selected>0</option>
+                                <option value="50" >50</option>
+                                <option value="100" >100</option>
+                            {% elif item.judge_porul_marks == 50.0 %}
+                                <option value="0" >0</option>
+                                <option value="50" selected>50</option>
+                                <option value="100" >100</option>
+                            {% else %}
+                                <option value="0" >0</option>
+                                <option value="50">50</option>
+                                <option value="100" selected>100</option>
+                            {% endif %}
+                        </select>
+                    </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+    </table>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+    // initialize selected kurals
+    console.log("document ready");
+
+    //get user selected kurals set here
+    var token = '{{csrf_token}}';
+
+    $("#save").click(function(){
+        console.log("inside save");
+        $(this).prop("disabled", true);
+        $(this).html('<div class="spinner-border text-success" role="status"><span class="sr-only">Loading...</span></div>');
+        // backend api hit part and save data
+        var userKuralID = $("#userkuralid").val();
+
+       var editedMarks = [];
+       var data = dataTable.rows().data();
+       var kuralValues = $("select#kural option").filter(":selected").val();
+       console.log(kuralValues);
+       $.each(data, function( index, value ) {
+          var kuralSelectID = '#kural'+value[1] + ' option:selected';
+          var porulSelectID = '#porul'+value[1] + ' option:selected';
+          var MarkinputID = '#markid'+value[1];
+          var kuralMark = $(kuralSelectID).val();
+          var porulMark = $(porulSelectID).val();
+          var markID = $(MarkinputID).val();
+          console.log(kuralMark);
+          console.log(porulMark);
+          console.log(markID);
+          var markObject = {kural_id: value[1], kural_marks: kuralMark, porul_marks: porulMark, mark_id: markID};
+          editedMarks.push(markObject);
+        });
+        $.ajax({
+            type: "POST",
+            url: '/judge/'+userKuralID+'/report',
+            headers: { "X-CSRFToken": token },
+            data: JSON.stringify({results: editedMarks}),
+            dataType: 'json',
+            success: function (data) {
+              window.alert("Saved Successfully");
+            }
+        });
+        console.log("after send");
+        $(this).prop("disabled", false);
+        $(this).html("Save");
+
+    });
+
+    var dataTable = $('#example').DataTable( {
+        columnDefs: [ {
+            orderable: false,
+            targets:   0
+        } ],
+        select: {
+            style: 'multi'
+        },
+        lengthMenu: [[ -1], [ "All"]],
+        pageLength: -1
+    } );
+} );
+</script>
+<style>
+.top-container{
+  text-align: center;
+  padding: 5px;
+}
+</style>
+{% endblock %}
+
+
