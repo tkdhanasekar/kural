@@ -1,0 +1,34 @@
+apt update
+apt install python3-pip python3-virtualenv nginx libpangocairo-1.0-0 certbot python3-certbot-nginx
+mkdir code
+git clone https://github.com/tkdhanasekar/kural.git
+mv kural/* code/
+cd /root/code
+rm -rf venv
+virtualenv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+vim .env
+export DB_HOST=127.0.0.1
+export DB_NAME=tirukkural
+export DB_USER=root
+export DB_PASS=Dashwood@321
+export APP_ENV=prod
+export TIME_ZONE=Asia/Kolkata
+export FROM_EMAIL=tamilttsweb@gmail.com
+export EMAIL_PASS=mypassword
+export SERVER_URL=http://kural.hashlabs.in/
+export DEBUG=False
+export HOST=kural.hashlabs.in
+:wq!
+
+gunicorn --bind 0.0.0.0:8000 tirukkuralweb.wsgi
+
+# if no error comes then all fine, you can verfiy by http://kural.hashlabs.in:8000/
+ctrl+c to stop the server
+
+cp NotoSansTamil-VariableFont_wdth,wght.ttf /usr/local/share/fonts/
+cp noto-sans-tamil-fonts.ymp /usr/local/share/fonts/
+
+
