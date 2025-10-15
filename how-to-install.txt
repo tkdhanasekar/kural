@@ -31,4 +31,129 @@ ctrl+c to stop the server
 cp NotoSansTamil-VariableFont_wdth,wght.ttf /usr/local/share/fonts/
 cp noto-sans-tamil-fonts.ymp /usr/local/share/fonts/
 
+run from terminal
+export DB_HOST=127.0.0.1
+export DB_NAME=tirukkural
+export DB_USER=root
+export DB_PASS=Dashwood@321
+export APP_ENV=prod
+export TIME_ZONE=Asia/Kolkata
+export FROM_EMAIL=tamilttsweb@gmail.com
+export EMAIL_PASS=mypassword
+export SERVER_URL=http://kural.hashlabs.in/
+export DEBUG=False
+export HOST=kural.hashlabs.in
+
+python manage.py collectstatic
+
+
+cd /etc/nginx/sites-enabled/
+rm default
+
+cp kural.conf /etc/nginx/conf.d/kural.conf
+
+vim /etc/nginx/conf.d/kural.conf
+server {
+    #listen *:443;
+    server_name akural.hashlabs.in;
+
+    location /userpdfs {
+        alias /root/code/kuralweb/userpdfs;
+    }
+
+    location /static/ {
+        root /root/code/kuralweb;
+    }
+
+   location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/akural.hashlabs.in/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/akural.hashlabs.in/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    if ($host = akural.hashlabs.in) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    server_name akural.hashlabs.in;
+    listen 80;
+    return 404; # managed by Certbot
+
+
+}
+
+:wq!
+
+systemctl restart nginx.service
+
+certbot --nginx -d akural.hashlabs.in --email tkdhanasekar@gmail.com
+
+# open kural.conf , remove duplicate ssl line if exists
+# nano /etc/nginx/conf.d/kural.conf
+# remove duplicate ssl lines if found (below 5 lines should come only once)
+# listen 443 ssl; # managed by Certbot
+# ssl_certificate /etc/letsencrypt/live/kural.hashlabs.in/fullchain.pem; # managed by Certbot
+# ssl_certificate_key /etc/letsencrypt/live/kural.hashlabs.in/privkey.pem; # managed by Certbot
+# include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+# ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+vim /etc/systemd/system/gunicorn.service
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/root/code/
+EnvironmentFile=/root/code/.env
+
+ExecStart= /root/code/venv/bin/gunicorn \
+            --access-logfile - \
+            --workers 3 \
+            --timeout 500 \
+            --bind unix:/run/gunicorn.sock \
+            tirukkuralweb.wsgi:application
+TimeoutStopSec=500
+[Install]
+WantedBy=multi-user.target
+:wq!
+
+vim /etc/systemd/system/gunicorn.socket
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=/run/gunicorn.sock
+
+[Install]
+WantedBy=sockets.target
+:wq!
+
+# dameon reload
+systemctl daemon-reload
+
+# Enable guncorn and socket
+systemctl enable gunicorn.service
+systemctl enable gunicorn.socket
+
+# Finally restart all the services
+systemctl restart gunicorn.service
+systemctl restart nginx.service
+
+# Before closing server , take backup, 
+# since DB is sqlite which is stored inside codebase
+# make sure to take back up of /root/code and server confs
+
 
