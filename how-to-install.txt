@@ -156,4 +156,7 @@ systemctl restart nginx.service
 # since DB is sqlite which is stored inside codebase
 # make sure to take back up of /root/code and server confs
 
+# create a user kuraladmin and set home directory to path of PDF files with given password
+sudo useradd -m -d /root/code/kuralweb/userpdfs kuraladmin
+passwd <given in mail dated november 08 2025>
 
