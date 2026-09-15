@@ -4,7 +4,7 @@ create ssh key in new server and add in github account
 apt update
 ```
 ```
-apt install python3-pip python3-virtualenv nginx libpangocairo-1.0-0 certbot python3-certbot-nginx
+apt install python3-pip python3-virtualenv nginx libpangocairo-1.0-0 certbot python3-certbot-nginx build-essential curl git libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 ```
 clone the repo 
 ```
@@ -21,9 +21,6 @@ cd /root/code
 ```
 ```
 rm -rf venv
-```
-```
-apt install -y build-essential curl git libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 ```
 ```
 curl https://pyenv.run | bash
@@ -202,19 +199,7 @@ WantedBy=sockets.target
 ```
 :wq!
 ```
-systemctl daemon-reload
-```
-```
-systemctl enable gunicorn.service
-```
-```
-systemctl enable gunicorn.socket
-```
-```
-systemctl restart gunicorn.service
-```
-```
-systemctl restart nginx.service
+systemctl daemon-reload && systemctl enable gunicorn.service && systemctl enable gunicorn.socket && systemctl restart gunicorn.service && systemctl restart nginx.service
 ```
 ```
 vim /root/code/tirukkuralweb/settings.py
