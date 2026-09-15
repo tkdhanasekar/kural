@@ -161,6 +161,7 @@ certbot --nginx -d xkural.hashlabs.in --email tkdhanasekar@gmail.com
 ```
 vim /etc/systemd/system/gunicorn.service
 ```
+```
 [Unit]
 Description=gunicorn daemon
 Requires=gunicorn.socket
