@@ -8,7 +8,7 @@ apt install python3-pip python3-virtualenv nginx libpangocairo-1.0-0 certbot pyt
 ```
 clone the repo 
 ```
-git clone git@github.com:tkdhanasekar/kural.git
+git clone https://github.com/tkdhanasekar/kural.git
 ```
 ```
 mkdir code
