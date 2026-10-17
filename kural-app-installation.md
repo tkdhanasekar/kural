@@ -80,9 +80,9 @@ APP_ENV=prod
 TIME_ZONE=Asia/Kolkata
 FROM_EMAIL=tamilttsweb@gmail.com
 EMAIL_PASS=mypassword
-SERVER_URL=https://xkural.hashlabs.in/
+SERVER_URL=https://kural.hashlabs.in/
 DEBUG=False
-HOST=xkural.hashlabs.in
+HOST=kural.hashlabs.in
 ```
 :wq!
 
@@ -96,9 +96,9 @@ export APP_ENV=prod
 export TIME_ZONE=Asia/Kolkata
 export FROM_EMAIL=tamilttsweb@gmail.com
 export EMAIL_PASS=mypassword
-export SERVER_URL=https://xkural.hashlabs.in/
+export SERVER_URL=https://kural.hashlabs.in/
 export DEBUG=False
-export HOST=xkural.hashlabs.in
+export HOST=kural.hashlabs.in
 ```
 ```
 python manage.py check
@@ -106,7 +106,7 @@ python manage.py check
 ```
 gunicorn --bind 0.0.0.0:8000 tirukkuralweb.wsgi
 ```
-check in browser xkural.hashlabs.in
+check in browser kural.hashlabs.in
 ctrl+c
 ```
 python manage.py collectstatic
@@ -126,7 +126,7 @@ server {
     listen 80;
     listen [::]:80;
 
-    server_name xkural.hashlabs.in;
+    server_name kural.hashlabs.in;
 
     location /userpdfs/ {
         alias /root/code/userpdfs/;
@@ -153,7 +153,7 @@ cd
 cd code
 ```
 ```
-certbot --nginx -d xkural.hashlabs.in --email tkdhanasekar@gmail.com
+certbot --nginx -d kural.hashlabs.in --email tshrinivasan@gmail.com
 ```
 ```
 vim /etc/systemd/system/gunicorn.service
@@ -206,11 +206,11 @@ vim /root/code/tirukkuralweb/settings.py
 ```
 ```
 ALLOWED_HOSTS = [
-    "xkural.hashlabs.in",
+    "kural.hashlabs.in",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://xkural.hashlabs.in",
+    "https://kural.hashlabs.in",
 ]
 ```
 :wq!
@@ -239,4 +239,4 @@ vim /etc/nginx/conf.d/kural.conf
 systemctl daemon-reload && systemctl restart gunicorn.service && systemctl restart gunicorn.socket && systemctl restart nginx && systemctl reload nginx && nginx -t
 ```
 
-https://xkural.hashlabs.in/login/
+https://kural.hashlabs.in/login/
