@@ -268,3 +268,6 @@ YTD
 # How to add students?
 
 YTD
+
+
+# Verify the competition team to check the guidelines on the registration form page and modify it based on the needs
