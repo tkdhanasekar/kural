@@ -243,7 +243,7 @@ https://kural.hashlabs.in/login/
 
 
 
-# create ftp user
+## create ftp user
 sudo useradd -m -d /root/code/kuralweb/userpdfs kuraladmin
 sudo passwd kuraladmin
 
@@ -255,19 +255,18 @@ sudo setfacl -m u:www-data:x /root/code
 sudo setfacl -R -m u:www-data:rX /root/code/userpdfs
 sudo -u www-data stat /root/code/userpdfs
 
-# install tamil fonts
-sudo apt install -y fonts-noto-core fontconfig  
+## install tamil fonts
+sudo apt install -y fonts-noto-core fontconfig
 sudo apt install -y fonts-lohit-taml
 sudo fc-cache -f -v
 sudo systemctl restart gunicorn
 
-# How to setup a competition?
+## How to setup a competition?
 
 YTD
 
-# How to add students?
+## How to add students?
 
 YTD
 
-
-# Verify the competition team to check the guidelines on the registration form page and modify it based on the needs
+## Verify the competition team to check the guidelines on the registration form page and modify it based on the needs
